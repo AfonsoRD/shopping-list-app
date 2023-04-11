@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   StyleSheet,
   View,
@@ -47,6 +48,7 @@ const ShoppingLists = ({ db, route }) => {
       documentsSnapshot.forEach((doc) => {
         newLists.push({ id: doc.id, ...doc.data() });
       });
+      cacheShoppingLists(newLists);
       setLists(newLists);
     });
 
@@ -56,6 +58,17 @@ const ShoppingLists = ({ db, route }) => {
       if (unsubShoppinglists) unsubShoppinglists();
     };
   }, []);
+
+  const cacheShoppingLists = async (listsToCache) => {
+    try {
+      await AsyncStorage.setItem(
+        'shopping_lists',
+        JSON.stringify(listsToCache)
+      );
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   return (
     <View style={styles.container}>
